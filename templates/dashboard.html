@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Smart City</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+            margin-top: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #0f766e;
+        }
+
+        .dashboard-card h3 {
+            color: #475569;
+            font-size: 17px;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-card .number {
+            font-size: 38px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+
+        .dashboard-links {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-button {
+            display: inline-block;
+            background: #0f766e;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+
+        .dashboard-button:hover {
+            background: #115e59;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="dashboard-container">
+
+        <header class="dashboard-header">
+            <h1>Smart City Dashboard</h1>
+            <p>Monitor citizen complaints and issue resolution.</p>
+        </header>
+
+        <section class="dashboard-cards">
+
+            <div class="dashboard-card">
+                <h3>Total Complaints</h3>
+                <div class="number">{{ total }}</div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Pending Complaints</h3>
+                <div class="number">{{ pending }}</div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Resolved Complaints</h3>
+                <div class="number">{{ resolved }}</div>
+            </div>
+
+        </section>
+
+        <div class="dashboard-links">
+            <a href="{{ url_for('home') }}" class="dashboard-button">
+                Back to Home
+            </a>
+
+            <a href="{{ url_for('report') }}" class="dashboard-button">
+                Report an Issue
+            </a>
+
+            <a href="{{ url_for('view_complaints') }}" class="dashboard-button">
+                View All Complaints
+            </a>
+        </div>
+
+    </main>
+
+</body>
+</html>

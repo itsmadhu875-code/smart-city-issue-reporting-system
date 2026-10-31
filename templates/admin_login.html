@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | SmartCity</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .admin-login-container {
+            max-width: 420px;
+            margin: 70px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.10);
+        }
+
+        .admin-login-container h1 {
+            text-align: center;
+            color: #0f766e;
+            margin-bottom: 10px;
+        }
+
+        .admin-login-container p {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        .admin-login-container label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: 600;
+        }
+
+        .admin-login-container input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+        }
+
+        .admin-login-container button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 12px;
+            background: #0f766e;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .admin-login-container button:hover {
+            background: #115e59;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #0f766e;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-login-container">
+
+        <h1>🏙️ Admin Login</h1>
+        <p>Smart City Issue Reporting System</p>
+
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+
+        <form action="{{ url_for('admin_login') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit">Login</button>
+
+        </form>
+
+        <a href="{{ url_for('home') }}" class="back-home">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</body>
+</html>
