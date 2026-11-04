@@ -183,9 +183,9 @@ def view_complaints():
         query += " AND category = %s"
         params.append(category)
 
-    if status in ("Pending", "Resolved"):
-        query += " AND status = %s"
-        params.append(status)
+    if status in ("Pending", "In Progress", "Resolved"):
+       query += " AND status = %s"
+       params.append(status)
 
     query += " ORDER BY id DESC"
 
@@ -217,11 +217,15 @@ def dashboard():
         resolved = conn.execute(
             "SELECT COUNT(*) AS count FROM complaints WHERE status = 'Resolved'"
         ).fetchone()["count"]
+        in_progress = conn.execute(
+    "SELECT COUNT(*) AS count FROM complaints WHERE status = 'In Progress'"
+).fetchone()["count"]
 
     return render_template(
         "dashboard.html",
         total=total,
         pending=pending,
+        in_progress=in_progress,
         resolved=resolved
     )
 
@@ -285,6 +289,10 @@ def admin_panel():
             "SELECT COUNT(*) AS count FROM complaints WHERE status = 'Pending'"
         ).fetchone()["count"]
 
+        in_progress = conn.execute(
+            "SELECT COUNT(*) AS count FROM complaints WHERE status = 'In Progress'"
+        ).fetchone()["count"]
+
         resolved = conn.execute(
             "SELECT COUNT(*) AS count FROM complaints WHERE status = 'Resolved'"
         ).fetchone()["count"]
@@ -297,10 +305,10 @@ def admin_panel():
         "admin_panel.html",
         total=total,
         pending=pending,
+        in_progress=in_progress,
         resolved=resolved,
         complaints=complaints
     )
-
 
 # Update Complaint Status
 @app.route("/admin/update-status/<int:complaint_id>", methods=["POST"])
@@ -309,7 +317,7 @@ def admin_update_status(complaint_id):
 
     new_status = request.form.get("status", "")
 
-    if new_status not in ("Pending", "Resolved"):
+    if new_status not in ("Pending", "In Progress", "Resolved"):
         flash("Invalid complaint status.", "error")
         return redirect(url_for("admin_panel"))
 

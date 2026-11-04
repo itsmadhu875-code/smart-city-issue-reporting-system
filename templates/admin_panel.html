@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,11 +34,6 @@
             font-size: 25px;
         }
 
-        .admin-header a {
-            color: white;
-            text-decoration: none;
-        }
-
         .logout-button {
             background: white;
             color: #0f766e;
@@ -58,10 +54,6 @@
             margin-bottom: 25px;
         }
 
-        .welcome h2 {
-            margin-bottom: 8px;
-        }
-
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -73,7 +65,7 @@
             background: white;
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 12px rgba(0,0,0,.06);
             border-left: 5px solid #0f766e;
         }
 
@@ -94,17 +86,13 @@
             padding: 22px;
             border-radius: 12px;
             overflow-x: auto;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        }
-
-        .table-container h2 {
-            margin-top: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,.06);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 750px;
+            min-width: 900px;
         }
 
         th, td {
@@ -122,10 +110,18 @@
             display: inline-block;
             padding: 6px 10px;
             border-radius: 5px;
-            background: #fef3c7;
-            color: #92400e;
             font-size: 13px;
             font-weight: bold;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .in-progress {
+            background: #dbeafe;
+            color: #1d4ed8;
         }
 
         .resolved {
@@ -148,13 +144,61 @@
             text-decoration: none;
         }
 
+        .status-form {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            min-width: 150px;
+        }
+
+        .status-form select {
+            padding: 9px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .update-button {
+            padding: 9px 12px;
+            background: #0f766e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .update-button:hover {
+            background: #115e59;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .flash-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         .empty-message {
             padding: 20px;
             text-align: center;
             color: #64748b;
         }
 
-        @media (max-width: 600px) {
+        .complaint-photo {
+            width: 75px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        @media(max-width: 600px) {
             .admin-header {
                 padding: 18px;
             }
@@ -172,118 +216,187 @@
 
 <body>
 
-    <header class="admin-header">
-        <h1>🏙️ SmartCity Admin Panel</h1>
+<header class="admin-header">
 
-        <form action="{{ url_for('admin_logout') }}" method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="logout-button">
-                Logout
-            </button>
-        </form>
-    </header>
+    <h1>🏙️ SmartCity Admin Panel</h1>
 
-    <main class="admin-container">
+    <form action="{{ url_for('admin_logout') }}" method="POST">
+        <input type="hidden" name="csrf_token"
+               value="{{ csrf_token() }}">
 
-        <section class="welcome">
-            <h2>Welcome, Admin!</h2>
-            <p>Manage and monitor citizen complaints from one place.</p>
-        </section>
+        <button type="submit" class="logout-button">
+            Logout
+        </button>
+    </form>
 
-        <div class="admin-links">
-            <a href="{{ url_for('home') }}">Home Page</a>
-            <a href="{{ url_for('view_complaints') }}">All Complaints</a>
-            <a href="{{ url_for('dashboard') }}">Public Dashboard</a>
+</header>
+
+<main class="admin-container">
+
+    <section class="welcome">
+        <h2>Welcome, Admin!</h2>
+        <p>Manage and monitor citizen complaints from one place.</p>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash-message {% if category == 'error' %}flash-error{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <div class="admin-links">
+        <a href="{{ url_for('home') }}">Home Page</a>
+        <a href="{{ url_for('view_complaints') }}">All Complaints</a>
+        <a href="{{ url_for('dashboard') }}">Public Dashboard</a>
+    </div>
+
+    <section class="stats">
+
+        <div class="stat-card">
+            <h3>Total Complaints</h3>
+            <p>{{ total }}</p>
         </div>
 
-        <section class="stats">
+        <div class="stat-card">
+            <h3>Pending Complaints</h3>
+            <p>{{ pending }}</p>
+        </div>
 
-            <div class="stat-card">
-                <h3>Total Complaints</h3>
-                <p>{{ total }}</p>
-            </div>
+        <div class="stat-card">
+            <h3>In Progress Complaints</h3>
+            <p>{{ in_progress }}</p>
+        </div>
 
-            <div class="stat-card">
-                <h3>Pending Complaints</h3>
-                <p>{{ pending }}</p>
-            </div>
+        <div class="stat-card">
+            <h3>Resolved Complaints</h3>
+            <p>{{ resolved }}</p>
+        </div>
 
-            <div class="stat-card">
-                <h3>Resolved Complaints</h3>
-                <p>{{ resolved }}</p>
-            </div>
+    </section>
 
-        </section>
+    <section class="table-container">
 
-        <section class="table-container">
+        <h2>All Citizen Complaints</h2>
 
-            <h2>All Complaints</h2>
+        {% if complaints %}
 
-            {% if complaints %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                    <th>Photo</th>
+                    <th>Status</th>
+                    <th>Update Status</th>
+                </tr>
+            </thead>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Location</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
+            <tbody>
 
-                <tbody>
-                    {% for complaint in complaints %}
-                    <tr>
-                        <td>{{ complaint['id'] }}</td>
-                        <td>{{ complaint['name'] }}</td>
-                        <td>{{ complaint['category'] }}</td>
-                        <td>{{ complaint['location'] }}</td>
-                        <td>{{ complaint['description'] }}</td>
+            {% for complaint in complaints %}
 
-                        <td>
-    {% if complaint['status'] == 'Resolved' %}
-        <span class="status resolved">Resolved</span>
-    {% else %}
-        <span class="status">Pending</span>
-    {% endif %}
+                <tr>
 
-    <form
-        action="{{ url_for('admin_update_status', complaint_id=complaint['id']) }}"
-        method="POST"
-        style="margin-top: 10px;"
-    >
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        {% if complaint['status'] == 'Pending' %}
-            <input type="hidden" name="status" value="Resolved">
-            <button type="submit" class="resolve-button">
-                Mark Resolved
-            </button>
+                    <td>{{ complaint['id'] }}</td>
+
+                    <td>{{ complaint['name'] }}</td>
+
+                    <td>{{ complaint['email'] }}</td>
+
+                    <td>{{ complaint['category'] }}</td>
+
+                    <td>{{ complaint['location'] }}</td>
+
+                    <td>{{ complaint['description'] }}</td>
+
+                    <td>
+                        {% if complaint['photo'] %}
+                            <a href="{{ url_for('static', filename='uploads/' ~ complaint['photo']) }}"
+                               target="_blank" rel="noopener noreferrer">
+                                <img
+                                    src="{{ url_for('static', filename='uploads/' ~ complaint['photo']) }}"
+                                    class="complaint-photo"
+                                    alt="Complaint Photo">
+                            </a>
+                        {% else %}
+                            No Photo
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if complaint['status'] == 'Resolved' %}
+                            <span class="status resolved">Resolved</span>
+
+                        {% elif complaint['status'] == 'In Progress' %}
+                            <span class="status in-progress">In Progress</span>
+
+                        {% else %}
+                            <span class="status pending">Pending</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <form
+                            action="{{ url_for('admin_update_status', complaint_id=complaint['id']) }}"
+                            method="POST"
+                            class="status-form">
+
+                            <input type="hidden"
+                                   name="csrf_token"
+                                   value="{{ csrf_token() }}">
+
+                            <select name="status" required>
+
+                                <option value="Pending"
+                                    {% if complaint['status'] == 'Pending' %}selected{% endif %}>
+                                    Pending
+                                </option>
+
+                                <option value="In Progress"
+                                    {% if complaint['status'] == 'In Progress' %}selected{% endif %}>
+                                    In Progress
+                                </option>
+
+                                <option value="Resolved"
+                                    {% if complaint['status'] == 'Resolved' %}selected{% endif %}>
+                                    Resolved
+                                </option>
+
+                            </select>
+
+                            <button type="submit" class="update-button">
+                                Update Status
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+        </table>
+
         {% else %}
-            <input type="hidden" name="status" value="Pending">
-            <button type="submit" class="pending-button">
-                Mark Pending
-            </button>
-        {% endif %}
-    </form>
-</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-
-            {% else %}
 
             <div class="empty-message">
                 No complaints have been submitted yet.
             </div>
 
-            {% endif %}
+        {% endif %}
 
-        </section>
+    </section>
 
-    </main>
+</main>
 
 </body>
 </html>
