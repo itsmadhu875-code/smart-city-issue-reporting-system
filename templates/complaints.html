@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints | Smart City</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .complaints-container {
+            max-width: 1150px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .complaints-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .complaints-table-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .complaints-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .complaints-table th,
+        .complaints-table td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e8edf2;
+        }
+
+        .complaints-table th {
+            background: #f1f5f9;
+            color: #243b53;
+        }
+
+        .complaints-table td {
+            color: #334155;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .complaint-photo {
+            width: 75px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .empty-message {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .page-button {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #0f766e;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="complaints-container">
+
+        <div class="complaints-header">
+            <div>
+                <h1>Reported Complaints</h1>
+                <p>View issues reported by citizens.</p>
+            </div>
+
+            <a href="{{ url_for('report') }}" class="page-button">
+                + Report New Issue
+            </a>
+        </div>
+
+        <div class="complaints-table-wrapper">
+            {% if complaints %}
+            <form action="{{ url_for('view_complaints') }}" method="GET" class="filter-form">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search by name, location or description..."
+        value="{{ search }}"
+    >
+
+    <select name="category">
+        <option value="">All Categories</option>
+        <option value="Road" {% if selected_category == 'Road' %}selected{% endif %}>Road</option>
+        <option value="Water" {% if selected_category == 'Water' %}selected{% endif %}>Water</option>
+        <option value="Electricity" {% if selected_category == 'Electricity' %}selected{% endif %}>Electricity</option>
+        <option value="Garbage" {% if selected_category == 'Garbage' %}selected{% endif %}>Garbage</option>
+        <option value="Other" {% if selected_category == 'Other' %}selected{% endif %}>Other</option>
+    </select>
+
+    <select name="status">
+        <option value="">All Statuses</option>
+        <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="Resolved" {% if selected_status == 'Resolved' %}selected{% endif %}>Resolved</option>
+    </select>
+
+    <button type="submit" class="filter-button">Search / Filter</button>
+
+    <a href="{{ url_for('view_complaints') }}" class="reset-button">Reset</a>
+
+</form>
+            <table class="complaints-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Description</th>
+                        <th>Photo</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for complaint in complaints %}
+                    <tr>
+                        <td>{{ complaint['id'] }}</td>
+                        <td>{{ complaint['name'] }}</td>
+                        <td>{{ complaint['category'] }}</td>
+                        <td>{{ complaint['location'] }}</td>
+                        <td>{{ complaint['description'] }}</td>
+                        <td>
+                            {% if complaint['photo'] %}
+                                <a href="{{ url_for('static', filename='uploads/' + complaint['photo']) }}" target="_blank">
+                                    <img
+                                        src="{{ url_for('static', filename='uploads/' + complaint['photo']) }}"
+                                        alt="Complaint photo"
+                                        class="complaint-photo">
+                                </a>
+                            {% else %}
+                                No photo
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge">
+                                {{ complaint['status'] }}
+                            </span>
+                            {% if complaint['status'] == 'Pending' %}
+
+{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <div class="empty-message">
+                    <h3>No complaints yet</h3>
+                    <p>When a citizen reports an issue, it will appear here.</p>
+                    <a href="{{ url_for('report') }}" class="page-button">
+                        Report an Issue
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <p style="margin-top: 20px;">
+            <a href="{{ url_for('home') }}">← Back to Home</a>
+        </p>
+
+    </main>
+
+</body>
+</html>

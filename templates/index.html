@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart City Issue Reporting System</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header>
+    <nav class="navbar">
+        <div class="logo">🏙️ SmartCity</div>
+
+       
+<ul class="nav-links">
+    <li><a href="{{ url_for('home') }}">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="{{ url_for('report') }}">Report Issues</a></li>
+    <li><a href="{{ url_for('view_complaints') }}">Complaints</a></li>
+    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('admin_login') }}">Admin Login</a></li>
+    <li><a href="#contact">Contact</a></li>
+</ul>
+
+
+        <a href="{{ url_for('report') }}" class="nav-button">
+            Report a Problem
+        </a>
+    </nav>
+</header>
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <p class="tagline">BUILDING A BETTER TOMORROW</p>
+
+                <h1>
+                    Make Your City <br>
+                    <span>Cleaner & Smarter</span>
+                </h1>
+
+                <p class="hero-description">
+                    Help improve your city by reporting road damage,
+                    garbage problems, broken streetlights and other
+                    civic issues. Your voice can make a difference.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#issues" class="primary-button">
+                        Report an Issue →
+                    </a>
+
+                    <a href="#about" class="secondary-button">
+                        Learn More
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div>
+                        <h3>24/7</h3>
+                        <p>Issue Reporting</p>
+                    </div>
+
+                    <div>
+                        <h3>Easy</h3>
+                        <p>Complaint Tracking</p>
+                    </div>
+
+                    <div>
+                        <h3>Smart</h3>
+                        <p>City Solutions</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="city-icon">🌆</div>
+                <div class="floating-card">
+                    <span>📍</span>
+                    <div>
+                        <h4>Your City, Your Voice</h4>
+                        <p>Report. Track. Improve.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about" id="about">
+            <p class="section-label">HOW IT WORKS</p>
+
+            <h2>Let's Make Our City Better</h2>
+
+            <p class="section-description">
+                Report civic problems easily and help create a
+                cleaner, safer and smarter community.
+            </p>
+
+            <div class="feature-container" id="issues">
+
+                <div class="feature-card">
+                    <div class="feature-icon">🛣️</div>
+                    <h3>Road Damage</h3>
+                    <p>Report potholes, damaged roads and unsafe streets.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🗑️</div>
+                    <h3>Garbage Issues</h3>
+                    <p>Report overflowing bins and uncollected waste.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>Streetlights</h3>
+                    <p>Report broken streetlights and dark public areas.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="report-cta" id="contact">
+            <h2>Your City Needs Your Voice!</h2>
+            <p>
+                Together, we can build a cleaner, safer and smarter city.
+            </p>
+            <a href="#issues" class="primary-button">
+                Get Started →
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 SmartCity Issue Reporting System | College Project</p>
+    </footer>
+
+</body>
+</html>

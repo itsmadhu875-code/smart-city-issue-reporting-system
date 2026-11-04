@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Report an Issue | SmartCity</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header>
+    <nav class="navbar">
+        <div class="logo">🏙️ SmartCity</div>
+
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('report') }}">Report Issues</a></li>
+            <li><a href="{{ url_for('view_complaints') }}">Complaints</a></li>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        </ul>
+    </nav>
+</header>
+
+    <main class="form-section">
+        <div class="form-container">
+
+            <div class="form-heading">
+                <p class="section-label">CITIZEN SERVICES</p>
+                <h1>Report a City Issue</h1>
+                <p>
+                    Help us improve your city by reporting a civic problem.
+                </p>
+            </div>
+
+            <form action="/submit-complaint"
+                  method="POST"
+                  enctype="multipart/form-data">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your full name"
+                        maxlength="100"
+                        autocomplete="name"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        maxlength="150"
+                        autocomplete="email"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Complaint Category *</label>
+
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Road Damage">Road Damage</option>
+                        <option value="Garbage">Garbage Collection</option>
+                        <option value="Streetlight">Streetlight Problem</option>
+                        <option value="Water Supply">Water Supply</option>
+                        <option value="Drainage">Drainage Problem</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Issue Location *</label>
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="Enter area, street or landmark"
+                        maxlength="255"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Problem Description *</label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="5"
+                        maxlength="3000"
+                        placeholder="Describe the problem..."
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="photo">Upload a Photo (Optional)</label>
+
+                    <input
+                        type="file"
+                        id="photo"
+                        name="photo"
+                        accept=".jpg,.jpeg,.png,.webp">
+
+                    <small>Allowed formats: JPG, JPEG, PNG and WEBP.</small>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Submit Complaint →
+                </button>
+
+            </form>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 SmartCity Issue Reporting System</p>
+    </footer>
+
+</body>
+</html>
