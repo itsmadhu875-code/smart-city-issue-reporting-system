@@ -42,7 +42,7 @@ ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-# Neon PostgreSQL connection
+# Database Connection
 def get_db():
     database_url = os.environ.get("DATABASE_URL")
 
@@ -52,7 +52,7 @@ def get_db():
     return psycopg.connect(database_url, row_factory=dict_row)
 
 
-# Create PostgreSQL table
+# Initialize Database
 def init_db():
     with get_db() as conn:
         conn.execute("""
@@ -69,7 +69,22 @@ def init_db():
         """)
 
 
-# Validate uploaded file
+# Admin Login Protection
+def admin_required(view_function):
+
+    @wraps(view_function)
+    def wrapped_view(*args, **kwargs):
+
+        if not session.get("admin_logged_in"):
+            flash("Please login as admin first.", "error")
+            return redirect(url_for("admin_login"))
+
+        return view_function(*args, **kwargs)
+
+    return wrapped_view
+
+
+# Validate Uploaded File
 def allowed_file(filename):
     if "." not in filename:
         return False
@@ -154,11 +169,13 @@ def submit_complaint():
             description, photo_filename
         ))
 
-    return redirect(url_for("view_complaints"))
+    flash("Your complaint has been submitted successfully!", "success")
+    return redirect(url_for("home"))
 
 
-# View Complaints
+# View Complaints - Admin Only
 @app.route("/complaints")
+@admin_required
 def view_complaints():
 
     search = request.args.get("search", "").strip()
@@ -184,8 +201,8 @@ def view_complaints():
         params.append(category)
 
     if status in ("Pending", "In Progress", "Resolved"):
-       query += " AND status = %s"
-       params.append(status)
+        query += " AND status = %s"
+        params.append(status)
 
     query += " ORDER BY id DESC"
 
@@ -201,8 +218,9 @@ def view_complaints():
     )
 
 
-# Dashboard
+# Dashboard - Admin Only
 @app.route("/dashboard")
+@admin_required
 def dashboard():
 
     with get_db() as conn:
@@ -217,9 +235,10 @@ def dashboard():
         resolved = conn.execute(
             "SELECT COUNT(*) AS count FROM complaints WHERE status = 'Resolved'"
         ).fetchone()["count"]
+
         in_progress = conn.execute(
-    "SELECT COUNT(*) AS count FROM complaints WHERE status = 'In Progress'"
-).fetchone()["count"]
+            "SELECT COUNT(*) AS count FROM complaints WHERE status = 'In Progress'"
+        ).fetchone()["count"]
 
     return render_template(
         "dashboard.html",
@@ -228,21 +247,6 @@ def dashboard():
         in_progress=in_progress,
         resolved=resolved
     )
-
-
-# Admin Login Required
-def admin_required(view_function):
-
-    @wraps(view_function)
-    def wrapped_view(*args, **kwargs):
-
-        if not session.get("admin_logged_in"):
-            flash("Please login as admin first.", "error")
-            return redirect(url_for("admin_login"))
-
-        return view_function(*args, **kwargs)
-
-    return wrapped_view
 
 
 # Admin Login
@@ -310,6 +314,7 @@ def admin_panel():
         complaints=complaints
     )
 
+
 # Update Complaint Status
 @app.route("/admin/update-status/<int:complaint_id>", methods=["POST"])
 @admin_required
@@ -348,7 +353,7 @@ def admin_logout():
     return redirect(url_for("admin_login"))
 
 
-# Initialize database when application starts
+# Initialize Database
 init_db()
 
 
